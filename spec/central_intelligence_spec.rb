@@ -39,23 +39,46 @@ class CentralIntelligence
   end
 
   def self.generate_specs
-    @generated_specs = <<-GENERATED
-describe Person do
+    @generated_specs = @recorded_messages.map do |s|
+      <<-GENERATED
+describe #{s[:class_name]} do
 
-  describe "#full_name" do
+  describe "##{s[:message]}" do
 
     it "returns the correct value" do
-      # Generated constructor, please check
-      person = Person.new
-      # add any required setup here
-      expect(person.full_name).to eq("Dick Jones")
+      satisfy "call to #{s[:class_name]}##{s[:message]}"
+      instance = described_class.new
+      expect(instance.#{s[:message]}).to eq(#{serialize s[:return_value]})
     end
 
   end
 end
-GENERATED
+      GENERATED
+
+    end
+
   end
 
+  def self.underscore(camel_cased_word)
+    camel_cased_word.downcase
+  end
+
+  # Attempt to recreate the source-code to represent this argument in the setup
+  # for our generated spec.
+  def self.serialize(arg)
+    if %w(Array Hash Float Fixnum String).include? arg.class.name
+      arg.pretty_inspect.chop
+    else
+      guess_constructor arg
+    end
+  end
+
+  # Don't recognise the type so we don't know how to recreate it
+  # in source code. So we'll take a guess at what might work and
+  # let the user fix it up if necessary.
+  def self.guess_constructor(arg)
+    "#{arg.class.name}.new(#{serialize(arg.to_s)})"
+  end
 end
 
 
@@ -112,25 +135,22 @@ describe CentralIntelligence do
     )
 
     # did it generate an in-memory version of the specs?
-    expect(CentralIntelligence.generated_specs).to eq <<-GENERATED
+    expect(CentralIntelligence.generated_specs).to match_array([<<GENERATED
 describe Person do
 
   describe "#full_name" do
 
     it "returns the correct value" do
-      # Generated constructor, please check
-      person = Person.new
-      # add any required setup here
-      expect(person.full_name).to eq("Dick Jones")
+      satisfy "call to Person#full_name"
+      instance = described_class.new
+      expect(instance.full_name).to eq("Dick Jones")
     end
 
   end
 end
 GENERATED
+    ])
   end
 
 end
-
-
-
 
