@@ -18,7 +18,7 @@ class CentralIntelligence
           class_name: class_name,
           message: message[0],
           args: message[1],
-          return_value: binding.pry
+          return_value: 42 # slime
         }
       end
     end.flatten
@@ -75,7 +75,7 @@ describe CentralIntelligence do
 
 
   it "can generate required specs" do
-    pending
+    pending "ability to get return value from method call"
     # run our top-level spec here
     #
     bob = Person.new('Dick', 'Jones')
