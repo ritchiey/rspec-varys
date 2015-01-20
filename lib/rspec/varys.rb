@@ -38,8 +38,17 @@ class RSpec::Varys
   end
 
   def self.generate_specs
-    @generated_specs = @recorded_messages.map do |s|
-      <<-GENERATED
+    {}.tap do |generated_specs|
+      @recorded_messages.each do |s|
+        generated_specs[s[:class_name]] ||= []
+        generated_specs[s[:class_name]] << generate_spec(s)
+      end
+    end
+  end
+
+
+  def self.generate_spec(s)
+    <<-GENERATED
 describe #{s[:class_name]} do
 
   describe "##{s[:message]}" do
@@ -53,16 +62,16 @@ describe #{s[:class_name]} do
   end
 end
       GENERATED
-
-    end
-
   end
 
   def self.print_report
-    FileUtils.mkdir_p "generated_specs"
-    File.open("generated_specs/person_spec.rb", 'w') do |file|
-      generated_specs.each do |spec|
-        file.write(spec)
+    dest_path = "generated_specs"
+    FileUtils.mkdir_p dest_path
+    generated_specs.each do |class_name, specs|
+      File.open("#{dest_path}/#{underscore class_name}_spec.rb", 'w') do |file|
+        specs.each do |spec|
+          file.write(spec)
+        end
       end
     end
     puts "Specs have been generated based on mocks you aren't currently testing."

@@ -73,7 +73,7 @@ GENERATED
       )
 
       # did it generate an in-memory version of the specs?
-      expect(described_class.generated_specs).to match_array([expected_spec])
+      expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
 
     end
 
