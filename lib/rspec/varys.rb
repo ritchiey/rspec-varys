@@ -1,5 +1,49 @@
 require "fileutils"
 
+module RSpec
+  module Varys
+    module DSL
+
+      def confirm(object)
+        Confirmation.new(object)
+      end
+
+      class Confirmation
+
+        def initialize(object)
+          @object = object
+        end
+
+        def can(ability)
+          @ability = ability
+          RSpec::Varys.confirmed_messages << to_expectation
+        end
+
+        private
+
+        def to_expectation
+          {
+            class_name: class_name,
+            message: message,
+            args: [],
+            return_value: "Dick Jones"
+          }
+        end
+
+        def class_name
+          @object.class.name
+        end
+
+        def message
+          @ability.instance_variable_get('@message')
+        end
+
+      end
+    end
+  end
+end
+
+
 class RSpec::Mocks::Proxy
 
   alias_method :old_message_received, :message_received
@@ -13,7 +57,11 @@ class RSpec::Mocks::Proxy
 end
 
 
-class RSpec::Varys
+module RSpec::Varys
+
+  def self.confirmed_messages
+    @confirmed_messages
+  end
 
   def self.recorded_messages
     @recorded_messages
@@ -26,6 +74,7 @@ class RSpec::Varys
   def self.reset
     @recorded_messages = []
     @generated_specs = nil
+    @confirmed_messages = []
   end
 
   def self.record(object, message, args, block, return_value)
@@ -39,7 +88,7 @@ class RSpec::Varys
 
   def self.generate_specs
     {}.tap do |generated_specs|
-      @recorded_messages.each do |s|
+      unconfirmed_messages.each do |s|
         generated_specs[s[:class_name]] ||= []
         generated_specs[s[:class_name]] << generate_spec(s)
       end
@@ -52,14 +101,14 @@ class RSpec::Varys
   describe "##{s[:message]}" do
 
     it "returns the correct value" do
-      satisfy "call to #{s[:class_name]}##{s[:message]}"
+      confirm(subject).can receive(:#{s[:message]}).and_return(#{serialize s[:return_value]})
       instance = described_class.new
       expect(instance.#{s[:message]}).to eq(#{serialize s[:return_value]})
     end
 
   end
 
-      GENERATED
+    GENERATED
   end
 
   def self.print_report
@@ -75,6 +124,10 @@ class RSpec::Varys
       end
     end
     puts "Specs have been generated based on mocks you aren't currently testing."
+  end
+
+  def self.unconfirmed_messages
+    recorded_messages - confirmed_messages
   end
 
   def self.underscore(camel_cased_word)
