@@ -36,8 +36,6 @@ describe RSpec::Varys do
 
     let(:expected_spec) do
 <<GENERATED
-describe Person do
-
   describe "#full_name" do
 
     it "returns the correct value" do
@@ -47,7 +45,7 @@ describe Person do
     end
 
   end
-end
+
 GENERATED
     end
 

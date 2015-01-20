@@ -49,8 +49,6 @@ class RSpec::Varys
 
   def self.generate_spec(s)
     <<-GENERATED
-describe #{s[:class_name]} do
-
   describe "##{s[:message]}" do
 
     it "returns the correct value" do
@@ -60,7 +58,7 @@ describe #{s[:class_name]} do
     end
 
   end
-end
+
       GENERATED
   end
 
@@ -69,9 +67,11 @@ end
     FileUtils.mkdir_p dest_path
     generated_specs.each do |class_name, specs|
       File.open("#{dest_path}/#{underscore class_name}_spec.rb", 'w') do |file|
+        file.write "describe #{class_name} do\n\n"
         specs.each do |spec|
           file.write(spec)
         end
+        file.write "end"
       end
     end
     puts "Specs have been generated based on mocks you aren't currently testing."
