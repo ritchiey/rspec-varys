@@ -3,25 +3,27 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
   Background:
     Given a file named "spec_helper.rb" with:
     """ruby
-    require 'central_intelligence'
+    $:.unshift File.expand_path('../../lib', File.dirname(__FILE__))
+
+    require "rspec/varys"
 
     RSpec.configure do |config|
       config.before(:all) do
-        CentralIntelligence.reset
+        RSpec::Varys.reset
       end
 
       config.after(:all) do
-        CentralIntelligence.print_report
+        RSpec::Varys.print_report
       end
     end
     """
 
 
-  Scenario: Simple
+  Scenario: For a single unmatched expectation
     Given a file named "top_level_spec.rb" with:
     """ruby
-    require 'spec_helper'
-    require 'person'
+    require_relative 'spec_helper'
+    require_relative 'person'
 
     describe "First day at work" do
 
@@ -50,9 +52,9 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     When I run `rspec top_level_spec.rb`
     Then it should pass with:
     """
-    Specs have been generated based on mocks you aren't currentl testing.
+    Specs have been generated based on mocks you aren't currently testing.
     """
-    And there should be a file named "generated_specs/person_spec.rb" with:
+    And the file "generated_specs/person_spec.rb" should contain:
     """
     describe Person do
 

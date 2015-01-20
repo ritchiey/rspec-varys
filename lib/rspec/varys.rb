@@ -1,5 +1,4 @@
-require 'pry'
-require 'rspec'
+require "fileutils"
 
 class RSpec::Mocks::Proxy
 
@@ -7,14 +6,14 @@ class RSpec::Mocks::Proxy
 
   def message_received(message, *args, &block)
     old_message_received(message, *args, &block).tap do |return_value|
-      CentralIntelligence.record object, message, args, block, return_value
+      RSpec::Varys.record object, message, args, block, return_value
     end
   end
 
 end
 
 
-class CentralIntelligence
+class RSpec::Varys
 
   def self.recorded_messages
     @recorded_messages
@@ -59,6 +58,16 @@ end
 
   end
 
+  def self.print_report
+    FileUtils.mkdir_p "generated_specs"
+    File.open("generated_specs/person_spec.rb", 'w') do |file|
+      generated_specs.each do |spec|
+        file.write(spec)
+      end
+    end
+    puts "Specs have been generated based on mocks you aren't currently testing."
+  end
+
   def self.underscore(camel_cased_word)
     camel_cased_word.downcase
   end
@@ -79,78 +88,5 @@ end
   def self.guess_constructor(arg)
     "#{arg.class.name}.new(#{serialize(arg.to_s)})"
   end
-end
-
-
-describe CentralIntelligence do
-
-  it "records the messages sent to a spy" do
-
-    CentralIntelligence.reset
-
-    o = Object.new
-    expect(o).to receive(:a_message).with(:a_parameter).and_return(42)
-    o.a_message(:a_parameter)
-
-    expect(CentralIntelligence.recorded_messages).to match_array([{
-      class_name: 'Object',
-      message: :a_message,
-      args: [:a_parameter],
-      return_value: 42
-    }])
-  end
-
-  class Person
-
-    def initialize(firstname, lastname)
-
-    end
-
-    def welcome
-      "Welcome to OCP, I'm #{full_name}"
-    end
-
-  end
-
-
-  it "can generate required specs" do
-    CentralIntelligence.reset
-
-    # run our top-level spec here
-    #
-    bob = Person.new('Dick', 'Jones')
-    expect(bob).to receive(:full_name).and_return("Dick Jones")
-    expect(bob.welcome).to eq "Welcome to OCP, I'm Dick Jones"
-
-    # did it correctly record the method called
-    expect(CentralIntelligence.recorded_messages).to match_array(
-      [
-        {
-          class_name: 'Person',
-          message: :full_name,
-          args: [],
-          return_value: "Dick Jones"
-        }
-      ]
-    )
-
-    # did it generate an in-memory version of the specs?
-    expect(CentralIntelligence.generated_specs).to match_array([<<GENERATED
-describe Person do
-
-  describe "#full_name" do
-
-    it "returns the correct value" do
-      satisfy "call to Person#full_name"
-      instance = described_class.new
-      expect(instance.full_name).to eq("Dick Jones")
-    end
-
-  end
-end
-GENERATED
-    ])
-  end
-
 end
 

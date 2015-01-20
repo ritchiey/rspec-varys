@@ -8,3 +8,4 @@ gem 'bond'
 gem 'pry-clipboard'
 
 gem 'cucumber'
+gem 'aruba'
