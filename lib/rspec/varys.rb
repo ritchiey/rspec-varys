@@ -1,3 +1,4 @@
+require "rspec/varys/version"
 require "fileutils"
 
 module RSpec
