@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/rspec-varys.svg)](http://badge.fury.io/rb/rspec-varys)
+
 # Rspec::Varys
 
 Generate RSpec specs from intelligence gathered from doubles and spies.
