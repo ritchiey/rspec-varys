@@ -2,17 +2,21 @@ require 'rspec'
 require 'rspec/varys'
 require 'pry'
 
-  class Person
+class Person
 
-    def initialize(firstname, lastname)
-
-    end
-
-    def welcome
-      "Welcome to OCP, I'm #{full_name}"
-    end
-
+  def initialize(first_name, last_name)
+    @first_name = first_name
+    @last_name = last_name
   end
+
+  def welcome
+    "Welcome to OCP, I'm #{full_name}"
+  end
+
+  def full_name
+    join_names(@first_name, @last_name)
+  end
+end
 
 describe RSpec::Varys do
 
@@ -39,11 +43,11 @@ describe RSpec::Varys do
     it "returns a list of expectations that have been satisfied" do
       confirm(Person.new 'Dick', 'Jones').can receive(:full_name).and_return("Dick Jones")
       expect(described_class.confirmed_messages).to match_array([{
-      class_name: 'Person',
-      message: :full_name,
-      args: [],
-      return_value: "Dick Jones"
-    }])
+        class_name: 'Person',
+        message: :full_name,
+        args: [],
+        return_value: "Dick Jones"
+      }])
     end
 
   end
@@ -65,9 +69,10 @@ describe RSpec::Varys do
 
 
   context "given the test-suite calls a mocked method" do
+    context "with no paramters" do
 
-    let(:expected_spec) do
-<<GENERATED
+      let(:expected_spec) do
+        <<GENERATED
   describe "#full_name" do
 
     it "returns the correct value" do
@@ -79,19 +84,9 @@ describe RSpec::Varys do
   end
 
 GENERATED
-    end
+      end
 
-    before do
-      described_class.reset
-
-      dick = Person.new('Dick', 'Jones')
-      expect(dick).to receive(:full_name).and_return("Dick Jones")
-      expect(dick.welcome).to eq "Welcome to OCP, I'm Dick Jones"
-    end
-
-    it "can generate required specs" do
-      # did it correctly record the method called
-      expect(described_class.recorded_messages).to match_array(
+      let(:recognised_specs) {
         [
           {
             class_name: 'Person',
@@ -100,13 +95,73 @@ GENERATED
             return_value: "Dick Jones"
           }
         ]
-      )
+      }
 
-      # did it generate an in-memory version of the specs?
-      expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
+      before do
+        described_class.reset
+
+        dick = Person.new('Dick', 'Jones')
+        expect(dick).to receive(:full_name).and_return("Dick Jones")
+        expect(dick.welcome).to eq "Welcome to OCP, I'm Dick Jones"
+      end
+
+      it "can generate required specs" do
+        # did it correctly record the method called
+        expect(described_class.recorded_messages).to match_array(recognised_specs)
+
+        # did it generate an in-memory version of the specs?
+        expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
+
+      end
 
     end
 
+    context "with parameters" do
+
+      let(:expected_spec) do
+        <<GENERATED
+  describe "#join_names" do
+
+    it "returns the correct value" do
+      confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+      instance = described_class.new
+      expect(instance.join_names("Dick", "Jones")).to eq("Dick Jones")
+    end
+
+  end
+
+GENERATED
+      end
+
+      let(:recognised_specs) {
+        [
+          {
+            class_name: 'Person',
+            message: :join_names,
+            args: ["Dick", "Jones"],
+            return_value: "Dick Jones"
+          }
+        ]
+      }
+
+      before do
+        described_class.reset
+
+        dick = Person.new('Dick', 'Jones')
+        expect(dick).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+        expect(dick.welcome).to eq "Welcome to OCP, I'm Dick Jones"
+      end
+
+      it "can generate required specs" do
+        # did it correctly record the method called
+        expect(described_class.recorded_messages).to match_array(recognised_specs)
+
+        # did it generate an in-memory version of the specs?
+        expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
+
+      end
+
+    end
   end
 
 end

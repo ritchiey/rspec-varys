@@ -207,3 +207,67 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     end
     """
 
+  Scenario: For an expectation with parameters
+    Given a file named "top_level_spec.rb" with:
+    """ruby
+    require_relative 'spec_helper'
+    require_relative 'person'
+
+    describe Person do
+
+      subject { described_class.new('Dick', 'Jones') }
+
+      describe "#full_name" do
+
+        it "returns the correct value" do
+          confirm(subject).can receive(:full_name).and_return("Dick Jones")
+          expect(subject).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+          subject.full_name
+        end
+
+      end
+
+    end
+
+    """
+    And a file named "person.rb" with:
+    """ruby
+    class Person
+
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
+
+      def welcome
+        "Welcome to OCP, I'm #{full_name}"
+      end
+
+      def full_name
+        join_names(@first_name, @last_name)
+      end
+
+    end
+    """
+
+    When I run `rspec top_level_spec.rb`
+    Then it should pass with:
+    """
+    Specs have been generated based on mocks you aren't currently testing.
+    """
+    And the file "generated_specs/person_spec.rb" should contain:
+    """
+    describe Person do
+
+      describe "#join_names" do
+
+        it "returns the correct value" do
+          confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+          instance = described_class.new
+          expect(instance.join_names("Dick", "Jones")).to eq("Dick Jones")
+        end
+
+      end
+
+    end
+    """

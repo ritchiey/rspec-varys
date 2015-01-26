@@ -102,14 +102,34 @@ module RSpec::Varys
   describe "##{s[:message]}" do
 
     it "returns the correct value" do
-      confirm(subject).can receive(:#{s[:message]}).and_return(#{serialize s[:return_value]})
+      confirm(subject).can receive(:#{s[:message]})#{with_parameters(s)}.and_return(#{serialize s[:return_value]})
       instance = described_class.new
-      expect(instance.#{s[:message]}).to eq(#{serialize s[:return_value]})
+      expect(instance.#{s[:message]}#{parameters(s)}).to eq(#{serialize s[:return_value]})
     end
 
   end
 
     GENERATED
+  end
+
+  def self.with_parameters(spec)
+    if spec[:args].length > 0
+      %Q[.with(#{params spec[:args]})]
+    else
+      ""
+    end
+  end
+
+  def self.params(args)
+     args.map{|a| serialize(a)}.join(", ")
+  end
+
+  def self.parameters(spec)
+    if spec[:args].length > 0
+      %Q[(#{params spec[:args]})]
+    else
+      ""
+    end
   end
 
   def self.print_report
