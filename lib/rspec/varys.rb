@@ -103,8 +103,7 @@ module RSpec::Varys
 
     it "returns the correct value" do
       confirm(subject).can receive(:#{s[:message]})#{with_parameters(s)}.and_return(#{serialize s[:return_value]})
-      instance = described_class.new
-      expect(instance.#{s[:message]}#{parameters(s)}).to eq(#{serialize s[:return_value]})
+      expect(subject.#{s[:message]}#{parameters(s)}).to eq(#{serialize s[:return_value]})
     end
 
   end

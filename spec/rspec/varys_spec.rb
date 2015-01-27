@@ -77,8 +77,7 @@ describe RSpec::Varys do
 
     it "returns the correct value" do
       confirm(subject).can receive(:full_name).and_return("Dick Jones")
-      instance = described_class.new
-      expect(instance.full_name).to eq("Dick Jones")
+      expect(subject.full_name).to eq("Dick Jones")
     end
 
   end
@@ -124,8 +123,7 @@ GENERATED
 
     it "returns the correct value" do
       confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
-      instance = described_class.new
-      expect(instance.join_names("Dick", "Jones")).to eq("Dick Jones")
+      expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
     end
 
   end
