@@ -26,9 +26,23 @@ module RSpec
           {
             class_name: class_name,
             message: message,
-            args: [],
-            return_value: "Dick Jones"
+            args: args,
+            return_value: return_value
           }
+        end
+
+        def args
+          customization = customizations.find{|c| c.instance_variable_get('@method_name') == :with}
+          (customization && customization.instance_variable_get('@args')) || []
+        end
+
+        def return_value
+          customization = customizations.find{|c| c.instance_variable_get('@method_name') == :and_return}
+          customization && customization.instance_variable_get('@args').first
+        end
+
+        def customizations
+          @ability.instance_variable_get('@recorded_customizations')
         end
 
         def class_name

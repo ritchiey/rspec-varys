@@ -34,6 +34,7 @@ describe RSpec::Varys do
         { class_name: 'Object', message: :a_message, args: [:a_parameter], return_value: 42 }
       ])
     end
+
   end
 
   describe ".confirmed_messages" do
@@ -46,6 +47,17 @@ describe RSpec::Varys do
         class_name: 'Person',
         message: :full_name,
         args: [],
+        return_value: "Dick Jones"
+      }])
+    end
+
+    it "parses parameters" do
+      described_class.reset
+      confirm(Person.new 'Dick', 'Jones').can receive(:full_name).with(:blah).and_return("Dick Jones")
+      expect(described_class.confirmed_messages).to match_array([{
+        class_name: 'Person',
+        message: :full_name,
+        args: [:blah],
         return_value: "Dick Jones"
       }])
     end
