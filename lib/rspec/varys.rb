@@ -102,6 +102,7 @@ module RSpec::Varys
   describe "##{s[:message]}" do
 
     it "returns the correct value" do
+      pending
       confirm(subject).can receive(:#{s[:message]})#{with_parameters(s)}.and_return(#{serialize s[:return_value]})
       expect(subject.#{s[:message]}#{parameters(s)}).to eq(#{serialize s[:return_value]})
     end

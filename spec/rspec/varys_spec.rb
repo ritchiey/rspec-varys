@@ -76,6 +76,7 @@ describe RSpec::Varys do
   describe "#full_name" do
 
     it "returns the correct value" do
+      pending
       confirm(subject).can receive(:full_name).and_return("Dick Jones")
       expect(subject.full_name).to eq("Dick Jones")
     end
@@ -122,6 +123,7 @@ GENERATED
   describe "#join_names" do
 
     it "returns the correct value" do
+      pending
       confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
       expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
     end

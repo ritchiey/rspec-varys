@@ -64,6 +64,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#full_name" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:full_name).and_return("Dick Jones")
           expect(subject.full_name).to eq("Dick Jones")
         end
@@ -117,6 +118,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#title" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:title).and_return("Vice President")
           expect(subject.title).to eq("Vice President")
         end
@@ -126,6 +128,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#full_name" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:full_name).and_return("Dick Jones")
           expect(subject.full_name).to eq("Dick Jones")
         end
@@ -159,6 +162,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#full_name" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:full_name).and_return("Dick Jones")
           # ...
         end
@@ -194,6 +198,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#title" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:title).and_return("Vice President")
           expect(subject.title).to eq("Vice President")
         end
@@ -216,6 +221,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#full_name" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:full_name).and_return("Dick Jones")
           expect(subject).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
           subject.full_name
@@ -258,6 +264,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#join_names" do
 
         it "returns the correct value" do
+          pending
           confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
           expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
         end
