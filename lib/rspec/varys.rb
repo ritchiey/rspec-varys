@@ -1,5 +1,6 @@
 require "rspec/varys/version"
 require "fileutils"
+require 'yaml'
 
 module RSpec
   module Varys
@@ -135,7 +136,7 @@ module RSpec::Varys
   end
 
   def self.params(args)
-     args.map{|a| serialize(a)}.join(", ")
+    args.map{|a| serialize(a)}.join(", ")
   end
 
   def self.parameters(spec)
@@ -147,19 +148,31 @@ module RSpec::Varys
   end
 
   def self.print_report
-    dest_path = "generated_specs"
-    FileUtils.mkdir_p dest_path
-    generated_specs.each do |class_name, specs|
-      File.open("#{dest_path}/#{underscore class_name}_spec.rb", 'w') do |file|
-        file.write "describe #{class_name} do\n\n"
-        specs.each do |spec|
-          file.write(spec)
-        end
-        file.write "end"
-      end
+    open_yaml_file do |yaml_file|
+      yaml_file.write YAML.dump(report)
     end
     puts "Specs have been generated based on mocks you aren't currently testing."
   end
+
+  def self.report
+    {
+      untested_stubs:
+      [
+        {
+          class_name:  'Person',
+          method:      'full_name',
+          returns:     'Dick Jones'
+        }
+      ]
+    }
+  end
+
+  def self.open_yaml_file
+    File.open("varys.yaml", 'w') do |io|
+      yield io
+    end
+  end
+
 
   def self.unconfirmed_messages
     recorded_messages - confirmed_messages
