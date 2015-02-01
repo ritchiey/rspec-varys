@@ -156,15 +156,18 @@ module RSpec::Varys
 
   def self.report
     {
-      untested_stubs:
-      [
+      untested_stubs: unconfirmed_messages.map do |call|
         {
-          class_name:  'Person',
-          method:      'full_name',
-          returns:     'Dick Jones'
-        }
-      ]
+          class_name:  call[:class_name],
+          method:      call[:message].to_s,
+          returns:     call[:return_value]
+        }.merge(arguments_if_any(call))
+      end
     }
+  end
+
+  def self.arguments_if_any(call)
+    call[:args].length > 0 ?  { arguments: call[:args] } : { }
   end
 
   def self.open_yaml_file

@@ -67,199 +67,171 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     """
 
 
-  #Scenario: For two unmatched expectations on the same class
-    #Given a file named "top_level_spec.rb" with:
-    #"""ruby
-    #require_relative 'spec_helper'
-    #require_relative 'person'
+  Scenario: For two unmatched expectations on the same class
+    Given a file named "top_level_spec.rb" with:
+    """ruby
+    require_relative 'spec_helper'
+    require_relative 'person'
 
-    #describe "First day at work" do
+    describe "First day at work" do
 
-      #it "starts with an introduction" do
-        #boss = Person.new('Dick', 'Jones')
-        #expect(boss).to receive(:full_name).and_return("Dick Jones")
-        #expect(boss).to receive(:title).and_return("Vice President")
-        #expect(boss.welcome).to eq "Welcome to OCP, I'm Vice President Dick Jones"
-      #end
+      it "starts with an introduction" do
+        boss = Person.new('Dick', 'Jones')
+        expect(boss).to receive(:full_name).and_return("Dick Jones")
+        expect(boss).to receive(:title).and_return("Vice President")
+        expect(boss.welcome).to eq "Welcome to OCP, I'm Vice President Dick Jones"
+      end
 
-    #end
-    #"""
-    #And a file named "person.rb" with:
-    #"""ruby
-    #class Person
+    end
+    """
+    And a file named "person.rb" with:
+    """ruby
+    class Person
 
-      #def initialize(firstname, lastname)
-      #end
+      def initialize(firstname, lastname)
+      end
 
-      #def welcome
-        #"Welcome to OCP, I'm #{title} #{full_name}"
-      #end
+      def welcome
+        "Welcome to OCP, I'm #{title} #{full_name}"
+      end
 
-    #end
-    #"""
+    end
+    """
 
-    #When I run `rspec top_level_spec.rb`
-    #Then it should pass with:
-    #"""
-    #Specs have been generated based on mocks you aren't currently testing.
-    #"""
-    #And the file "generated_specs/person_spec.rb" should contain:
-    #"""
-    #describe Person do
+    When I run `rspec top_level_spec.rb`
+    Then it should pass with:
+    """
+    Specs have been generated based on mocks you aren't currently testing.
+    """
+    And the file "varys.yaml" should contain:
+    """
+    ---
+    :untested_stubs:
+    - :class_name: Person
+      :method: title
+      :returns: Vice President
+    - :class_name: Person
+      :method: full_name
+      :returns: Dick Jones
+    """
 
-      #describe "#title" do
+  Scenario: For one matched and one unmatched expectation
+    Given a file named "top_level_spec.rb" with:
+    """ruby
+    require_relative 'spec_helper'
+    require_relative 'person'
 
-        #it "returns the correct value" do
-          #pending
-          #confirm(subject).can receive(:title).and_return("Vice President")
-          #expect(subject.title).to eq("Vice President")
-        #end
+    describe "First day at work" do
 
-      #end
+      it "starts with an introduction" do
+        boss = Person.new('Dick', 'Jones')
+        allow(boss).to receive(:full_name).and_return("Dick Jones")
+        allow(boss).to receive(:title).and_return("Vice President")
+        expect(boss.welcome).to eq "Welcome to OCP, I'm Vice President Dick Jones"
+      end
 
-      #describe "#full_name" do
+    end
 
-        #it "returns the correct value" do
-          #pending
-          #confirm(subject).can receive(:full_name).and_return("Dick Jones")
-          #expect(subject.full_name).to eq("Dick Jones")
-        #end
+    describe Person do
 
-      #end
+      subject { described_class.new('Dick', 'Jones') }
 
-    #end
-    #"""
+      describe "#full_name" do
 
-  #Scenario: For one matched and one unmatched expectation
-    #Given a file named "top_level_spec.rb" with:
-    #"""ruby
-    #require_relative 'spec_helper'
-    #require_relative 'person'
+        it "returns the correct value" do
+          confirm(subject).can receive(:full_name).and_return("Dick Jones")
+          # ...
+        end
 
-    #describe "First day at work" do
+      end
 
-      #it "starts with an introduction" do
-        #boss = Person.new('Dick', 'Jones')
-        #expect(boss).to receive(:full_name).and_return("Dick Jones")
-        #expect(boss).to receive(:title).and_return("Vice President")
-        #expect(boss.welcome).to eq "Welcome to OCP, I'm Vice President Dick Jones"
-      #end
+    end
 
-    #end
+    """
+    And a file named "person.rb" with:
+    """ruby
+    class Person
 
-    #describe Person do
+      def initialize(firstname, lastname)
+      end
 
-      #subject { described_class.new('Dick', 'Jones') }
+      def welcome
+        "Welcome to OCP, I'm #{title} #{full_name}"
+      end
 
-      #describe "#full_name" do
+    end
+    """
 
-        #it "returns the correct value" do
-          #confirm(subject).can receive(:full_name).and_return("Dick Jones")
-          ## ...
-        #end
+    When I run `rspec top_level_spec.rb`
+    Then it should pass with:
+    """
+    Specs have been generated based on mocks you aren't currently testing.
+    """
+    And the file "varys.yaml" should contain:
+    """
+    ---
+    :untested_stubs:
+    - :class_name: Person
+      :method: title
+      :returns: Vice President
+    """
 
-      #end
+  Scenario: For an expectation with parameters
+    Given a file named "top_level_spec.rb" with:
+    """ruby
+    require_relative 'spec_helper'
+    require_relative 'person'
 
-    #end
+    describe Person do
 
-    #"""
-    #And a file named "person.rb" with:
-    #"""ruby
-    #class Person
+      subject { described_class.new('Dick', 'Jones') }
 
-      #def initialize(firstname, lastname)
-      #end
+      describe "#full_name" do
 
-      #def welcome
-        #"Welcome to OCP, I'm #{title} #{full_name}"
-      #end
+        it "returns the correct value" do
+          confirm(subject).can receive(:full_name).and_return("Dick Jones")
+          expect(subject).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+          subject.full_name
+        end
 
-    #end
-    #"""
+      end
 
-    #When I run `rspec top_level_spec.rb`
-    #Then it should pass with:
-    #"""
-    #Specs have been generated based on mocks you aren't currently testing.
-    #"""
-    #And the file "generated_specs/person_spec.rb" should contain:
-    #"""
-    #describe Person do
+    end
 
-      #describe "#title" do
+    """
+    And a file named "person.rb" with:
+    """ruby
+    class Person
 
-        #it "returns the correct value" do
-          #pending
-          #confirm(subject).can receive(:title).and_return("Vice President")
-          #expect(subject.title).to eq("Vice President")
-        #end
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
 
-      #end
+      def welcome
+        "Welcome to OCP, I'm #{full_name}"
+      end
 
-    #end
-    #"""
+      def full_name
+        join_names(@first_name, @last_name)
+      end
 
-  #Scenario: For an expectation with parameters
-    #Given a file named "top_level_spec.rb" with:
-    #"""ruby
-    #require_relative 'spec_helper'
-    #require_relative 'person'
+    end
+    """
 
-    #describe Person do
-
-      #subject { described_class.new('Dick', 'Jones') }
-
-      #describe "#full_name" do
-
-        #it "returns the correct value" do
-          #confirm(subject).can receive(:full_name).and_return("Dick Jones")
-          #expect(subject).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
-          #subject.full_name
-        #end
-
-      #end
-
-    #end
-
-    #"""
-    #And a file named "person.rb" with:
-    #"""ruby
-    #class Person
-
-      #def initialize(first_name, last_name)
-        #@first_name = first_name
-        #@last_name = last_name
-      #end
-
-      #def welcome
-        #"Welcome to OCP, I'm #{full_name}"
-      #end
-
-      #def full_name
-        #join_names(@first_name, @last_name)
-      #end
-
-    #end
-    #"""
-
-    #When I run `rspec top_level_spec.rb`
-    #Then it should pass with:
-    #"""
-    #Specs have been generated based on mocks you aren't currently testing.
-    #"""
-    #And the file "generated_specs/person_spec.rb" should contain:
-    #"""
-    #describe Person do
-
-      #describe "#join_names" do
-
-        #it "returns the correct value" do
-          #pending
-          #confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
-          #expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
-        #end
-
-      #end
-
-    #end
-    #"""
+    When I run `rspec top_level_spec.rb`
+    Then it should pass with:
+    """
+    Specs have been generated based on mocks you aren't currently testing.
+    """
+    And the file "varys.yaml" should contain:
+    """
+    ---
+    :untested_stubs:
+    - :class_name: Person
+      :method: join_names
+      :returns: Dick Jones
+      :arguments:
+      - Dick
+      - Jones
+    """
