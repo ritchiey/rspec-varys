@@ -6,6 +6,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     $:.unshift File.expand_path('../../lib', File.dirname(__FILE__))
 
     require "rspec/varys"
+    require "rspec/varys/rspec_generator"
 
     RSpec.configure do |config|
 
@@ -17,6 +18,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
 
       config.after(:suite) do
         RSpec::Varys.print_report
+        RSpec::Varys::RSpecGenerator.run
       end
     end
     """
@@ -64,6 +66,17 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     - :class_name: Person
       :method: full_name
       :returns: Dick Jones
+    """
+
+    And the file "generated_specs.rb" should contain:
+    """
+    describe Person, "#full_name" do
+
+      it "returns something" do
+        expect(subject.full_name).to return("Dick Jones")
+      end
+
+    end
     """
 
 
