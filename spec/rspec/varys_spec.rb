@@ -1,6 +1,5 @@
 require 'rspec'
 require 'rspec/varys'
-require 'pry'
 
 class Person
 

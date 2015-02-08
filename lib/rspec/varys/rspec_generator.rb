@@ -16,7 +16,9 @@ class RSpec::Varys::RSpecGenerator
 describe #{spec[:class_name]}, "##{spec[:method]}" do
 
   it "returns something" do
-    expect(subject.#{spec[:method]}#{args_if_any(spec)}).to return(#{serialize spec[:returns]})
+    confirm(subject).can receive(:#{spec[:method]})#{with_args_if_any(spec)}.and_return(#{serialize spec[:returns]})
+    skip "remove this line once implemented"
+    expect(subject.#{spec[:method]}#{args_if_any(spec)}).to eq(#{serialize spec[:returns]})
   end
 
 end
@@ -24,6 +26,11 @@ end
 
       EOF
     end
+  end
+
+  def self.with_args_if_any(call)
+    args = call[:arguments]
+    (args && args.length > 0) ?  ".with(#{args.map{|a| serialize a}.join ', '})" : ""
   end
 
   def self.args_if_any(call)

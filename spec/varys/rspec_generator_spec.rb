@@ -28,7 +28,9 @@ SPECS
 describe Person, "#full_name" do
 
   it "returns something" do
-    expect(subject.full_name("Dick", "Jones")).to return("Dick Jones")
+    confirm(subject).can receive(:full_name).with("Dick", "Jones").and_return("Dick Jones")
+    skip "remove this line once implemented"
+    expect(subject.full_name("Dick", "Jones")).to eq("Dick Jones")
   end
 
 end
@@ -59,7 +61,9 @@ SPECS
 describe Person, "#full_name" do
 
   it "returns something" do
-    expect(subject.full_name).to return("Dick Jones")
+    confirm(subject).can receive(:full_name).and_return("Dick Jones")
+    skip "remove this line once implemented"
+    expect(subject.full_name).to eq("Dick Jones")
   end
 
 end

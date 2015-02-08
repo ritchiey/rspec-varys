@@ -73,7 +73,9 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     describe Person, "#full_name" do
 
       it "returns something" do
-        expect(subject.full_name).to return("Dick Jones")
+        confirm(subject).can receive(:full_name).and_return("Dick Jones")
+        skip "remove this line once implemented"
+        expect(subject.full_name).to eq("Dick Jones")
       end
 
     end
@@ -135,7 +137,9 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     describe Person, "#title" do
 
       it "returns something" do
-        expect(subject.title).to return("Vice President")
+        confirm(subject).can receive(:title).and_return("Vice President")
+        skip "remove this line once implemented"
+        expect(subject.title).to eq("Vice President")
       end
 
     end
@@ -144,7 +148,9 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     describe Person, "#full_name" do
 
       it "returns something" do
-        expect(subject.full_name).to return("Dick Jones")
+        confirm(subject).can receive(:full_name).and_return("Dick Jones")
+        skip "remove this line once implemented"
+        expect(subject.full_name).to eq("Dick Jones")
       end
 
     end
@@ -227,7 +233,6 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       describe "#full_name" do
 
         it "returns the correct value" do
-          confirm(subject).can receive(:full_name).and_return("Dick Jones")
           expect(subject).to receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
           subject.full_name
         end
@@ -279,7 +284,9 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     describe Person, "#join_names" do
 
       it "returns something" do
-        expect(subject.join_names("Dick", "Jones")).to return("Dick Jones")
+        confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
+        skip "remove this line once implemented"
+        expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
       end
 
     end
