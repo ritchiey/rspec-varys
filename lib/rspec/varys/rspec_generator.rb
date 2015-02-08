@@ -20,6 +20,8 @@ describe #{spec[:class_name]}, "##{spec[:method]}" do
   end
 
 end
+
+
       EOF
     end
   end

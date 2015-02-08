@@ -29,6 +29,8 @@ describe Person, "#full_name" do
   end
 
 end
+
+
 EOF
       end
     end

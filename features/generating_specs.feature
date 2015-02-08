@@ -56,11 +56,11 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
 
     When I run `rspec top_level_spec.rb`
     Then it should pass with:
-    """
+    """ruby
     Specs have been generated based on mocks you aren't currently testing.
     """
     And the file "varys.yaml" should contain:
-    """
+    """yaml
     ---
     :untested_stubs:
     - :class_name: Person
@@ -69,7 +69,7 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
     """
 
     And the file "generated_specs.rb" should contain:
-    """
+    """ruby
     describe Person, "#full_name" do
 
       it "returns something" do
@@ -77,6 +77,8 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       end
 
     end
+
+
     """
 
 
@@ -113,11 +115,11 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
 
     When I run `rspec top_level_spec.rb`
     Then it should pass with:
-    """
+    """ruby
     Specs have been generated based on mocks you aren't currently testing.
     """
     And the file "varys.yaml" should contain:
-    """
+    """yaml
     ---
     :untested_stubs:
     - :class_name: Person
@@ -127,6 +129,29 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       :method: full_name
       :returns: Dick Jones
     """
+
+    And the file "generated_specs.rb" should contain:
+    """ruby
+    describe Person, "#title" do
+
+      it "returns something" do
+        expect(subject.title).to return("Vice President")
+      end
+
+    end
+
+
+    describe Person, "#full_name" do
+
+      it "returns something" do
+        expect(subject.full_name).to return("Dick Jones")
+      end
+
+    end
+
+
+    """
+
 
   Scenario: For one matched and one unmatched expectation
     Given a file named "top_level_spec.rb" with:
@@ -177,11 +202,11 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
 
     When I run `rspec top_level_spec.rb`
     Then it should pass with:
-    """
+    """ruby
     Specs have been generated based on mocks you aren't currently testing.
     """
     And the file "varys.yaml" should contain:
-    """
+    """yaml
     ---
     :untested_stubs:
     - :class_name: Person
@@ -234,11 +259,11 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
 
     When I run `rspec top_level_spec.rb`
     Then it should pass with:
-    """
+    """ruby
     Specs have been generated based on mocks you aren't currently testing.
     """
     And the file "varys.yaml" should contain:
-    """
+    """yaml
     ---
     :untested_stubs:
     - :class_name: Person
