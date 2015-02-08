@@ -273,3 +273,16 @@ Feature: Generating an RSpec Spec from an RSpec Expectation
       - Dick
       - Jones
     """
+
+    And the file "generated_specs.rb" should contain:
+    """ruby
+    describe Person, "#join_names" do
+
+      it "returns something" do
+        expect(subject.join_names("Dick", "Jones")).to return("Dick Jones")
+      end
+
+    end
+
+
+    """

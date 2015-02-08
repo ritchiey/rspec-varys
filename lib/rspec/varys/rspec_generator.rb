@@ -16,7 +16,7 @@ class RSpec::Varys::RSpecGenerator
 describe #{spec[:class_name]}, "##{spec[:method]}" do
 
   it "returns something" do
-    expect(subject.#{spec[:method]}).to return(#{serialize spec[:returns]})
+    expect(subject.#{spec[:method]}#{args_if_any(spec)}).to return(#{serialize spec[:returns]})
   end
 
 end
@@ -24,6 +24,11 @@ end
 
       EOF
     end
+  end
+
+  def self.args_if_any(call)
+    args = call[:arguments]
+    (args && args.length > 0) ?  "(#{args.map{|a| serialize a}.join ', '})" : ""
   end
 
   # Attempt to recreate the source-code to represent this argument in the setup
