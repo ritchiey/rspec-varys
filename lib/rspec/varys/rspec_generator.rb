@@ -41,7 +41,7 @@ end
   # Attempt to recreate the source-code to represent this argument in the setup
   # for our generated spec.
   def self.serialize(arg)
-    if %w(Array Hash Float Fixnum String).include? arg.class.name
+    if %w(Array Hash Float Fixnum String NilClass TrueClass FalseClass).include? arg.class.name
       arg.pretty_inspect.chop
     else
       guess_constructor arg
