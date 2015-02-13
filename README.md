@@ -20,6 +20,32 @@ Or install it yourself as:
 
     $ gem install rspec-varys
 
+## Configuration
+
+Add these lines to your `spec/spec_helper.rb`:
+
+    require "rspec/varys"
+    require "rspec/varys/rspec_generator"
+
+    RSpec.configure do |config|
+
+      config.include RSpec::Varys::DSL
+
+      config.before(:suite) do
+        RSpec::Varys.reset
+      end
+
+      config.after(:suite) do
+
+        # Required: create varys.yml
+        RSpec::Varys.print_report
+
+        # Optional: create generated_specs.yml from varys.yml
+        RSpec::Varys::RSpecGenerator.run
+
+      end
+    end
+
 ## Usage
 
 See the [Cucumber features](https://relishapp.com/spechero/rspec-varys/docs) for examples of intended usage.
