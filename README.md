@@ -98,7 +98,8 @@ Add these lines to your `spec/spec_helper.rb`:
 
 ## Usage
 
-See the [Cucumber features](https://relishapp.com/spechero/rspec-varys/docs) for examples of intended usage.
+See the [Cucumber features](https://relishapp.com/spechero/rspec-varys/docs) for examples of intended usage or watch [this screencast](https://vimeo.com/119725799) for a simple tutorial.
+
 
 ## Contributing
 
