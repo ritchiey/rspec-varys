@@ -1,6 +1,7 @@
 require 'rspec'
 require 'rspec/varys'
 
+
 class Person
 
   def initialize(first_name, last_name)
@@ -72,6 +73,7 @@ describe RSpec::Varys do
 
     expect(described_class.recorded_messages).to match_array([{
       class_name: 'Object',
+      type: 'instance',
       message: :a_message,
       args: [:a_parameter],
       return_value: 42
@@ -80,27 +82,13 @@ describe RSpec::Varys do
 
 
   context "given the test-suite calls a mocked method" do
-    context "with no paramters" do
-
-      let(:expected_spec) do
-        <<GENERATED
-  describe "#full_name" do
-
-    it "returns the correct value" do
-      pending
-      confirm(subject).can receive(:full_name).and_return("Dick Jones")
-      expect(subject.full_name).to eq("Dick Jones")
-    end
-
-  end
-
-GENERATED
-      end
+    context "with no parameters" do
 
       let(:recognised_specs) {
         [
           {
             class_name: 'Person',
+            type: 'instance',
             message: :full_name,
             args: [],
             return_value: "Dick Jones"
@@ -116,38 +104,19 @@ GENERATED
         expect(dick.welcome).to eq "Welcome to OCP, I'm Dick Jones"
       end
 
-      it "can generate required specs" do
-        # did it correctly record the method called
+      it "record the methods called" do
         expect(described_class.recorded_messages).to match_array(recognised_specs)
-
-        # did it generate an in-memory version of the specs?
-        expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
-
       end
 
     end
 
     context "with parameters" do
 
-      let(:expected_spec) do
-        <<GENERATED
-  describe "#join_names" do
-
-    it "returns the correct value" do
-      pending
-      confirm(subject).can receive(:join_names).with("Dick", "Jones").and_return("Dick Jones")
-      expect(subject.join_names("Dick", "Jones")).to eq("Dick Jones")
-    end
-
-  end
-
-GENERATED
-      end
-
       let(:recognised_specs) {
         [
           {
             class_name: 'Person',
+            type: 'instance',
             message: :join_names,
             args: ["Dick", "Jones"],
             return_value: "Dick Jones"
@@ -163,13 +132,8 @@ GENERATED
         expect(dick.welcome).to eq "Welcome to OCP, I'm Dick Jones"
       end
 
-      it "can generate required specs" do
-        # did it correctly record the method called
+      it "records that the method was called" do
         expect(described_class.recorded_messages).to match_array(recognised_specs)
-
-        # did it generate an in-memory version of the specs?
-        expect(described_class.generated_specs).to eq('Person' => [ expected_spec ])
-
       end
 
     end

@@ -13,12 +13,12 @@ class RSpec::Varys::RSpecGenerator
   def self.process_specs(specs, file)
     specs[:untested_stubs].each do |spec|
       file.puts <<-EOF
-describe #{spec[:class_name]}, "##{spec[:method]}" do
+describe #{spec[:class_name]}, "#{class_method?(spec) ? '.' : '#'}#{spec[:method]}" do
 
   it "returns something" do
-    confirm(subject).can receive(:#{spec[:method]})#{with_args_if_any(spec)}.and_return(#{serialize spec[:returns]})
+    confirm(#{sut(spec)}).can receive(:#{spec[:method]})#{with_args_if_any(spec)}.and_return(#{serialize spec[:returns]})
     skip "remove this line once implemented"
-    expect(subject.#{spec[:method]}#{args_if_any(spec)}).to eq(#{serialize spec[:returns]})
+    expect(#{sut(spec)}.#{spec[:method]}#{args_if_any(spec)}).to eq(#{serialize spec[:returns]})
   end
 
 end
@@ -53,6 +53,14 @@ end
   # let the user fix it up if necessary.
   def self.guess_constructor(arg)
     "#{arg.class.name}.new(#{serialize(arg.to_s)})"
+  end
+
+  def self.class_method?(call)
+    call[:type] == 'class'
+  end
+
+  def self.sut(call)
+    class_method?(call) ? "described_class" : "subject"
   end
 
 end

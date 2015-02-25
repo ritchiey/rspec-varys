@@ -83,10 +83,6 @@ module RSpec::Varys
     @recorded_messages
   end
 
-  def self.generated_specs
-    @generated_specs ||= generate_specs
-  end
-
   def self.reset
     @recorded_messages = []
     @generated_specs = nil
@@ -95,57 +91,26 @@ module RSpec::Varys
 
   def self.record(object, message, args, block, return_value)
     @recorded_messages << {
-      class_name: object.class.name,
+      class_name: class_name_for(object),
+      type:   type_for(object),
       message: message,
       args: args,
       return_value: return_value
     }
   end
 
-  def self.generate_specs
-    {}.tap do |generated_specs|
-      unconfirmed_messages.each do |s|
-        generated_specs[s[:class_name]] ||= []
-        generated_specs[s[:class_name]] << generate_spec(s)
-      end
-    end
+  def self.type_for(object)
+    object.kind_of?(Class) ? 'class' : 'instance'
   end
 
-
-  def self.generate_spec(s)
-    <<-GENERATED
-  describe "##{s[:message]}" do
-
-    it "returns the correct value" do
-      pending
-      confirm(subject).can receive(:#{s[:message]})#{with_parameters(s)}.and_return(#{serialize s[:return_value]})
-      expect(subject.#{s[:message]}#{parameters(s)}).to eq(#{serialize s[:return_value]})
-    end
-
-  end
-
-    GENERATED
-  end
-
-  def self.with_parameters(spec)
-    if spec[:args].length > 0
-      %Q[.with(#{params spec[:args]})]
+  def self.class_name_for(object)
+    if object.kind_of? RSpec::Mocks::Double
+      'Name'
     else
-      ""
+      object.kind_of?(Class) ? object.name : object.class.name
     end
   end
 
-  def self.params(args)
-    args.map{|a| serialize(a)}.join(", ")
-  end
-
-  def self.parameters(spec)
-    if spec[:args].length > 0
-      %Q[(#{params spec[:args]})]
-    else
-      ""
-    end
-  end
 
   def self.print_report
     open_yaml_file do |yaml_file|
@@ -159,6 +124,7 @@ module RSpec::Varys
       untested_stubs: unconfirmed_messages.map do |call|
         {
           class_name:  call[:class_name],
+          type:        call[:type],
           method:      call[:message].to_s,
           returns:     call[:return_value]
         }.merge(arguments_if_any(call))
@@ -181,25 +147,5 @@ module RSpec::Varys
     recorded_messages - confirmed_messages
   end
 
-  def self.underscore(camel_cased_word)
-    camel_cased_word.downcase
-  end
-
-  # Attempt to recreate the source-code to represent this argument in the setup
-  # for our generated spec.
-  def self.serialize(arg)
-    if %w(Array Hash Float Fixnum String NilClass TrueClass FalseClass).include? arg.class.name
-      arg.pretty_inspect.chop
-    else
-      guess_constructor arg
-    end
-  end
-
-  # Don't recognise the type so we don't know how to recreate it
-  # in source code. So we'll take a guess at what might work and
-  # let the user fix it up if necessary.
-  def self.guess_constructor(arg)
-    "#{arg.class.name}.new(#{serialize(arg.to_s)})"
-  end
 end
 
