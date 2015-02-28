@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/rspec-varys.svg)](http://badge.fury.io/rb/rspec-varys)
+
 [![Code Climate](https://codeclimate.com/github/ritchiey/rspec-varys/badges/gpa.svg)](https://codeclimate.com/github/ritchiey/rspec-varys)
 
 # Rspec::Varys
