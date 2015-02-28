@@ -4,8 +4,8 @@ rvm:
 - 2.1.2
 
 addons:
-    code_climate:
-          repo_token: dbd468edcfe120e56aec92ebf99ff6c030becc1910a8d1684102c6fa2e907439
+  code_climate:
+    repo_token: dbd468edcfe120e56aec92ebf99ff6c030becc1910a8d1684102c6fa2e907439
 
 deploy:
   provider: rubygems
