@@ -1,0 +1,12 @@
+language: ruby
+bundler_args: 
+rvm:
+- 2.1.2
+deploy:
+  provider: rubygems
+  api_key:
+    secure: WLQzsGZ6aPzqsyS1Mu4YCZjer4ZXRFQo5j1XPkTdR/bYmip2GBQAoVIUihlIXrcTSDKRk4VVZ62GkVSOkTA41vAVvD69ARGNIgwSDzLfoVp7RWEIi7peUBdYhzOoQM8eFnOKa3UeZbEqjolsTjtQfMQISNCeL9TCmdRcyLa/avk=
+  gem: rspec-varys
+  on:
+    tags: true
+    repo: ritchiey/rspec-varys
