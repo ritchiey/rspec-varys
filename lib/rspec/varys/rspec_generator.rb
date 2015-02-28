@@ -29,13 +29,12 @@ end
   end
 
   def self.with_args_if_any(call)
-    args = call[:arguments]
-    (args && args.length > 0) ?  ".with(#{args.map{|a| serialize a}.join ', '})" : ""
+    args_if_any(call, ".with")
   end
 
-  def self.args_if_any(call)
+  def self.args_if_any(call, prefix="")
     args = call[:arguments]
-    (args && args.length > 0) ?  "(#{args.map{|a| serialize a}.join ', '})" : ""
+    (args && args.length > 0) ?  "#{prefix}(#{args.map{|a| serialize a}.join ', '})" : ""
   end
 
   # Attempt to recreate the source-code to represent this argument in the setup
