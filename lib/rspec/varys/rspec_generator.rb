@@ -1,3 +1,5 @@
+require 'pp'
+
 class RSpec::Varys::RSpecGenerator
 
   def self.run
